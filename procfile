@@ -1,1 +1,1 @@
-web: python tgram_bot.py -p $PORT
+web: python3 tgram_bot.py

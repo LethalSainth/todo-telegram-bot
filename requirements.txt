@@ -1,0 +1,4 @@
+telegram == 0.0.1
+faunadb==4.0.1
+pytz == 2019.1
+logger==1.4

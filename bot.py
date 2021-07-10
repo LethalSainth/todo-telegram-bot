@@ -4,24 +4,21 @@ Simple Bot to create a todo list and edit the list.
 Source: https://dev.to/lordghostx/building-a-telegram-bot-with-python-and-fauna-494i
 """
 
-
-import telegram
-from telegram.ext import Updater
-from telegram.ext import CommandHandler
-from telegram.ext import MessageHandler, Filters
+import os, logging, pytz
+from telegram.ext import Updater, Commandhandler, MessageHandler, Filters
 from faunadb import query as q
 from faunadb.objects import Ref
 from faunadb.client import FaunaClient
-import pytz
 from datetime import datetime
 
+PORT = int(os.environ.get('PORT', 5000))
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-telegram_bot_token = "1117281529:AAHxO27N0Uwf4lN253mz95GOhyfsg8vphuc"
+TOKEN = "1117281529:AAHxO27N0Uwf4lN253mz95GOhyfsg8vphuc"
 fauna_secret = "fnAEAQyvrUACCNjdFDrIeXot-6bwA85huqVeNo5p"
+client = FaunaClient(secret=fauna_secret)   
 
-updater = Updater(token=telegram_bot_token, use_context=True)
-dispatcher = updater.dispatcher
-client = FaunaClient(secret=fauna_secret)
 
 
 def start(update, context):
@@ -88,6 +85,7 @@ def update_todo(update, context):
         chat_id=chat_id, text="Successfully updated todo task status 👌\n\nSee all your todo with /list_todo")
 
 
+    
 def delete_todo(update, context):
     chat_id = update.effective_chat.id
     message = update.message.text
@@ -119,12 +117,28 @@ def echo(update, context):
                      "data": {"last_command": ""}}))
         context.bot.send_message(
             chat_id=chat_id, text="Successfully added todo task 👍\n\nSee all your todo with /list_todo")
-
-
-dispatcher.add_handler(CommandHandler("greet", start))
-dispatcher.add_handler(CommandHandler("add_todo", add_todo))
-dispatcher.add_handler(CommandHandler("list_todo", list_todo))
-dispatcher.add_handler(MessageHandler(Filters.regex("/update_[0-9]*"), update_todo))
-dispatcher.add_handler(MessageHandler(Filters.regex("/delete_[0-9]*"), delete_todo))
-dispatcher.add_handler(MessageHandler(Filters.text, echo))
-updater.start_polling()
+        
+    
+    
+def error(update, context):
+    """Log Errors caused by Updates."""
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
+        
+    
+    
+def main():
+    updater = Updater(TOKEN, use_context=True)
+    dispatcher = updater.dispatcher
+    dispatcher.add_handler(CommandHandler("greet", start))
+    dispatcher.add_handler(CommandHandler("add_todo", add_todo))
+    dispatcher.add_handler(CommandHandler("list_todo", list_todo))
+    dispatcher.add_handler(MessageHandler(Filters.regex("/update_[0-9]*"), update_todo))
+    dispatcher.add_handler(MessageHandler(Filters.regex("/delete_[0-9]*"), delete_todo))
+    dispatcher.add_handler(MessageHandler(Filters.text, echo))
+    updater.start_webhook(listen="0.0.0.0", port=int(PORT), url_path=TOKEN)
+    updater.bot.setWebhook('https://yourherokuappname.herokuapp.com/' + TOKEN)
+    updater.idle()
+    
+    
+if __name__ == '__main__':
+    main()

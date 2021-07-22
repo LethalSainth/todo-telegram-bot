@@ -5,7 +5,7 @@ Source: https://dev.to/lordghostx/building-a-telegram-bot-with-python-and-fauna-
 """
 
 import os, logging, pytz
-from telegram.ext import Updater, Commandhandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from faunadb import query as q
 from faunadb.objects import Ref
 from faunadb.client import FaunaClient
@@ -19,9 +19,9 @@ TOKEN = "1117281529:AAHxO27N0Uwf4lN253mz95GOhyfsg8vphuc"
 fauna_secret = "fnAEAQyvrUACCNjdFDrIeXot-6bwA85huqVeNo5p"
 client = FaunaClient(secret=fauna_secret)   
 
+    
 
-
-def start(update, context):
+def welcome(update, context):
     chat_id = update.effective_chat.id
 
     first_name = update["message"]["chat"]["first_name"]
@@ -39,16 +39,21 @@ def start(update, context):
                 "date": datetime.now(pytz.UTC)
             }
         }))
-    welcome_text = 'Hey baby, {} is a beautiful name tho... Do you mind giving me mine?'.format(first_name)
+    welcome_text = 'Hello {}, my name is watari your personal telegram assistant.\nYou can call on me anytime... \nWhat will you like to do now though? Add task with /add_todo 😇'.format(first_name)
     context.bot.send_message(chat_id=chat_id, text=welcome_text)
 
-
+    
+def calling(update, context):
+    chat_id = update.effective_chat.id
+    context.bot.send_message('Yesssss??!!!, no dey shout my name boss🙄🙄😪... What will you like to do today though? Add task with /add_todo 😇')
+    
+    
 def add_todo(update, context):
     chat_id = update.effective_chat.id
 
     user = client.query(q.get(q.match(q.index("userss"), chat_id)))
     client.query(q.update(q.ref(q.collection("users"), user["ref"].id()), {"data": {"last_command": "add_todo"}}))
-    context.bot.send_message(chat_id=chat_id, text="Enter the todo task you want to add 😁")
+    context.bot.send_message(chat_id=chat_id, text="Enter the todo task you want to add🎤")
 
 
 def list_todo(update, context):
@@ -129,14 +134,14 @@ def error(update, context):
 def main():
     updater = Updater(TOKEN, use_context=True)
     dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler("greet", start))
+    dispatcher.add_handler(CommandHandler("start", welcome))
     dispatcher.add_handler(CommandHandler("add_todo", add_todo))
     dispatcher.add_handler(CommandHandler("list_todo", list_todo))
     dispatcher.add_handler(MessageHandler(Filters.regex("/update_[0-9]*"), update_todo))
     dispatcher.add_handler(MessageHandler(Filters.regex("/delete_[0-9]*"), delete_todo))
     dispatcher.add_handler(MessageHandler(Filters.text, echo))
     updater.start_webhook(listen="0.0.0.0", port=int(PORT), url_path=TOKEN)
-    updater.bot.setWebhook('https://yourherokuappname.herokuapp.com/' + TOKEN)
+    updater.bot.setWebhook('https://evening-citadel-87390.herokuapp.com/' + TOKEN)
     updater.idle()
     
     

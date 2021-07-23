@@ -135,6 +135,7 @@ def main():
     updater = Updater(TOKEN, use_context=True)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", welcome))
+    dispatcher.add_handler(CommandHandler("watariiiii!!!", calling))
     dispatcher.add_handler(CommandHandler("add_todo", add_todo))
     dispatcher.add_handler(CommandHandler("list_todo", list_todo))
     dispatcher.add_handler(MessageHandler(Filters.regex("/update_[0-9]*"), update_todo))

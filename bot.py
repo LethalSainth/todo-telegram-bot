@@ -45,7 +45,7 @@ def welcome(update, context):
     
 def calling(update, context):
     chat_id = update.effective_chat.id
-    context.bot.send_message('Yesssss??!!!, no dey shout my name boss🙄🙄😪... What will you like to do today though? Add task with /add_todo 😇')
+    context.bot.send_message(chat_id=chat_id, text='Yesssss??!!!, no dey shout my name boss🙄🙄😪... What will you like to do today though? Add tasks with /add_todo 😇')
     
     
 def add_todo(update, context):

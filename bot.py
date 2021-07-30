@@ -15,8 +15,8 @@ PORT = int(os.environ.get('PORT', 5000))
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-TOKEN = "1117281529:AAHxO27N0Uwf4lN253mz95GOhyfsg8vphuc"
-fauna_secret = "fnAEAQyvrUACCNjdFDrIeXot-6bwA85huqVeNo5p"
+TOKEN = "Telegram bot token"
+fauna_secret = "Fauna db Secret"
 client = FaunaClient(secret=fauna_secret)   
 
     
